@@ -357,13 +357,6 @@
         margin-bottom: 10px;
       }
 
-      .story-card-hint {
-        font-size: 0.82rem;
-        color: #a5b4fc;
-        font-style: italic;
-        margin-bottom: 8px;
-      }
-
       .story-card-footer {
         display: flex;
         justify-content: space-between;
@@ -395,7 +388,9 @@
       }
 
       @keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       /* Intro screen */
@@ -597,6 +592,165 @@
         font-size: 0.9rem;
       }
 
+      /* Elaboration Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: linear-gradient(
+          145deg,
+          rgba(15, 23, 42, 0.98),
+          rgba(15, 23, 42, 0.95)
+        );
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      }
+
+      .modal-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+
+      .modal-subtitle {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin-bottom: 16px;
+        line-height: 1.4;
+      }
+
+      .modal-choice-display {
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        border-radius: var(--radius-md);
+        padding: 10px 12px;
+        margin-bottom: 14px;
+        font-size: 0.85rem;
+        color: #bae6fd;
+      }
+
+      .modal-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      .elaboration-textarea {
+        width: 100%;
+        height: 120px;
+        padding: 10px 12px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        border-radius: var(--radius-md);
+        color: var(--text);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          sans-serif;
+        font-size: 0.9rem;
+        resize: none;
+        transition: border-color var(--transition-fast);
+        margin-bottom: 8px;
+      }
+
+      .elaboration-textarea:focus {
+        outline: none;
+        border-color: rgba(56, 189, 248, 0.7);
+      }
+
+      .elaboration-textarea::placeholder {
+        color: rgba(148, 163, 184, 0.6);
+      }
+
+      .word-count {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .word-count.valid {
+        color: var(--success);
+      }
+
+      .word-count.invalid {
+        color: var(--danger);
+      }
+
+      .validation-message {
+        font-size: 0.75rem;
+        color: var(--danger);
+        margin-top: -6px;
+        margin-bottom: 10px;
+        display: none;
+      }
+
+      .validation-message.show {
+        display: block;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .modal-buttons button {
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all var(--transition-fast);
+      }
+
+      .btn-save {
+        background: linear-gradient(135deg, #0ea5e9, #22c55e);
+        color: #0b1120;
+        box-shadow: 0 10px 30px rgba(56, 189, 248, 0.6);
+      }
+
+      .btn-save:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 36px rgba(56, 189, 248, 0.7);
+      }
+
+      .btn-save:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-cancel {
+        background: rgba(15, 23, 42, 0.9);
+        color: var(--muted);
+        border: 1px solid rgba(148, 163, 184, 0.5);
+      }
+
+      .btn-cancel:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 26px rgba(15, 23, 42, 0.7);
+      }
+
       /* Scrollbar small tweak */
       ::-webkit-scrollbar {
         width: 6px;
@@ -619,7 +773,7 @@
             Choose a workplace scenario and discover your decision patterns.
           </div>
         </div>
-        <div class="progress-pill" id="progress-pill" style="display: none;">
+        <div class="progress-pill" id="progress-pill" style="display: none">
           <span class="progress-dot"></span>
           <span id="progress-text">Intro</span>
         </div>
@@ -632,7 +786,7 @@
             <div class="scene-title">Select a RPG Episode</div>
             <p class="intro-text">
               Each scenario tests different aspects of your workplace mindset.
-              Choose a RPG to begin.
+              Select one to begin.
             </p>
 
             <div id="stories-loading" class="loading-state">
@@ -647,13 +801,17 @@
         <!-- INTRO SCREEN -->
         <section id="screen-intro" class="card hidden">
           <div class="card-inner">
-            <div class="scene-title" id="intro-welcome">Welcome, project lead.</div>
+            <div class="scene-title" id="intro-welcome">Welcome,</div>
             <p class="intro-text" id="intro-description"></p>
 
             <div class="intro-grid">
               <div>
                 <div class="tag">You'll be measured on</div>
-                <div class="chips-row" id="intro-dimensions" style="margin-top: 6px"></div>
+                <div
+                  class="chips-row"
+                  id="intro-dimensions"
+                  style="margin-top: 6px"
+                ></div>
               </div>
               <div>
                 <div class="tag">How to play</div>
@@ -714,7 +872,9 @@
               <span class="tag">Persona Card</span>
               <span class="pill" id="summary-pill"></span>
             </div>
-            <div class="scene-title">Snapshot of your decision pattern in this scenario</div>
+            <div class="scene-title">
+              Snapshot of your decision pattern in this scenario
+            </div>
 
             <div class="report-grid">
               <div class="report-section">
@@ -745,7 +905,7 @@
             </div>
 
             <div class="report-section" style="margin-top: 10px">
-              <div class="report-heading">Areas for Growth</div>
+              <div class="report-heading">Further Recommendation </div>
               <div class="report-text" id="report-growth"></div>
             </div>
 
@@ -767,6 +927,49 @@
           </div>
         </section>
       </main>
+
+      <!-- ELABORATION MODAL -->
+      <div class="modal-overlay" id="elaboration-modal">
+        <div class="modal-content">
+          <div class="modal-title">Share your "Whys"</div>
+          <div class="modal-subtitle">
+            Explain your reasoning for this decision and/or What else you would
+            do...
+          </div>
+
+          <div class="modal-choice-display" id="modal-choice-text"></div>
+
+          <div class="modal-label"></div>
+          <textarea
+            class="elaboration-textarea"
+            id="elaboration-input"
+            placeholder="Type here..."
+          ></textarea>
+
+          <div class="word-count" id="word-count-display">
+            <span id="word-count-text">0 words</span>
+            <span id="word-count-status"></span>
+          </div>
+
+          <div class="validation-message" id="validation-message">
+            Minimum 10 words required
+          </div>
+
+          <div class="modal-buttons">
+            <button class="btn-cancel" onclick="closeElaborationModal()">
+              Cancel
+            </button>
+            <button
+              class="btn-save"
+              id="save-elaboration-btn"
+              onclick="saveElaboration()"
+              disabled
+            >
+              Save & Continue
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -777,6 +980,8 @@
       let score = {};
       let choiceHistory = [];
       let currentSceneIndex = 0;
+      let elaborationData = [];
+      let pendingOption = null;
 
       // ==================== STORY LOADING ====================
 
@@ -798,7 +1003,7 @@
           });
 
           const stories = await Promise.all(storyPromises);
-          availableStories = stories.filter(s => s !== null);
+          availableStories = stories.filter((s) => s !== null);
 
           displayStories();
         } catch (error) {
@@ -827,19 +1032,22 @@
           card.onclick = () => selectStory(story);
 
           const dimensionsHTML = story.dimensions
-            .map(d => `<span class="metric-chip"><span class="metric-dot"></span> ${d.label}</span>`)
+            .map(
+              (d) =>
+                `<span class="metric-chip"><span class="metric-dot"></span> ${d.label}</span>`
+            )
             .join('');
 
           card.innerHTML = `
             <div class="story-card-header">
               <div>
                 <div class="story-card-title">${story.metadata.title}</div>
-                <div class="story-card-subtitle">${story.metadata.subtitle}</div>
+              
               </div>
               <div class="story-card-badge">${story.metadata.difficulty}</div>
             </div>
             <div class="story-card-desc">${story.metadata.description}</div>
-            <div class="story-card-hint">Tests: ${story.metadata.hint}</div>
+            
             <div class="story-card-footer">
               <div class="story-card-dimensions chips-row">
                 ${dimensionsHTML}
@@ -858,22 +1066,25 @@
 
         // Initialize score object with this story's dimensions
         score = {};
-        story.dimensions.forEach(dim => {
+        story.dimensions.forEach((dim) => {
           score[dim.key] = 0;
         });
 
         // Update header
-        document.getElementById('header-title').innerHTML =
-          `${story.metadata.title} <span class="badge">${story.metadata.subtitle}</span>`;
-        document.getElementById('header-subtitle').textContent = story.metadata.description;
+        document.getElementById(
+          'header-title'
+        ).innerHTML = `${story.metadata.title} <span class="badge">${story.metadata.subtitle}</span>`;
+        document.getElementById('header-subtitle').textContent =
+          story.metadata.description;
         document.getElementById('progress-pill').style.display = 'flex';
 
         // Update intro screen
-        document.getElementById('intro-description').textContent = story.metadata.description;
+        document.getElementById('intro-description').textContent =
+          story.metadata.description;
 
         const dimensionsContainer = document.getElementById('intro-dimensions');
         dimensionsContainer.innerHTML = '';
-        story.dimensions.forEach(dim => {
+        story.dimensions.forEach((dim) => {
           const chip = document.createElement('span');
           chip.className = 'metric-chip';
           chip.innerHTML = `<span class="metric-dot"></span> ${dim.label}`;
@@ -887,8 +1098,13 @@
       // ==================== SCREEN NAVIGATION ====================
 
       function showScreen(screenId) {
-        const screens = ['screen-stories', 'screen-intro', 'screen-game', 'screen-report'];
-        screens.forEach(id => {
+        const screens = [
+          'screen-stories',
+          'screen-intro',
+          'screen-game',
+          'screen-report',
+        ];
+        screens.forEach((id) => {
           document.getElementById(id).classList.add('hidden');
         });
         document.getElementById(screenId).classList.remove('hidden');
@@ -911,6 +1127,8 @@
         score = {};
         choiceHistory = [];
         currentSceneIndex = 0;
+        elaborationData = [];
+        pendingOption = null;
         showScreen('screen-stories');
       }
 
@@ -919,9 +1137,10 @@
       function startGame() {
         currentSceneIndex = 0;
         choiceHistory = [];
+        elaborationData = [];
 
         // Reset scores
-        currentStory.dimensions.forEach(dim => {
+        currentStory.dimensions.forEach((dim) => {
           score[dim.key] = 0;
         });
 
@@ -943,8 +1162,9 @@
         document.getElementById('scene-title').innerHTML = scene.title;
         document.getElementById('scene-body').innerHTML = scene.body;
         document.getElementById('tip-text').textContent = scene.tip;
-        document.getElementById('scene-counter').textContent =
-          `${currentSceneIndex + 1} / ${scenes.length}`;
+        document.getElementById('scene-counter').textContent = `${
+          currentSceneIndex + 1
+        } / ${scenes.length}`;
 
         // Render choice buttons
         const choicesContainer = document.getElementById('choices-container');
@@ -967,29 +1187,24 @@
           btn.appendChild(desc);
 
           btn.addEventListener('click', () => {
-            applyScore(option);
-
-            if (option.end) {
-              showReport();
-            } else {
-              currentSceneIndex++;
-              renderScene();
-            }
+            pendingOption = option;
+            showElaborationModal(option);
           });
 
           choicesContainer.appendChild(btn);
         });
       }
 
-      function applyScore(option) {
+      function applyScore(option, elaboration) {
         // Apply deltas from this choice
-        Object.keys(option.deltas).forEach(key => {
+        Object.keys(option.deltas).forEach((key) => {
           if (score.hasOwnProperty(key)) {
             score[key] += option.deltas[key];
           }
         });
 
         choiceHistory.push(option.code);
+        elaborationData.push(elaboration);
       }
 
       // ==================== REPORT GENERATION ====================
@@ -1012,7 +1227,11 @@
         const scoresContainer = document.getElementById('scores-container');
         scoresContainer.innerHTML = '';
 
-        currentStory.dimensions.forEach(dim => {
+        const sortedDimensions = [...currentStory.dimensions].sort(
+          (a, b) => score[b.key] - score[a.key]
+        );
+
+        sortedDimensions.forEach((dim) => {
           const scoreRow = document.createElement('div');
           scoreRow.className = 'score-row';
 
@@ -1035,8 +1254,10 @@
           barInner.className = 'score-bar-inner';
 
           const maxVal = dim.maxValue || 15;
-          const normalizedValue = Math.max(0, Math.min(100,
-            ((score[dim.key] + maxVal) / (maxVal * 2)) * 100));
+          const normalizedValue = Math.max(
+            0,
+            Math.min(100, ((score[dim.key] + maxVal) / (maxVal * 2)) * 100)
+          );
           barInner.style.width = normalizedValue + '%';
 
           bar.appendChild(barInner);
@@ -1049,10 +1270,13 @@
 
         choiceHistory.forEach((choiceCode, index) => {
           const scene = scenes[index];
-          const option = scene.options.find(o => o.code === choiceCode);
+          const option = scene.options.find((o) => o.code === choiceCode);
+          const elaboration = elaborationData[index] || '';
 
           const li = document.createElement('li');
-          li.textContent = `Scene ${index + 1}: ${option.main}`;
+          li.innerHTML = `<strong>Scene ${index + 1}:</strong> ${
+            option.main
+          }. <em>${elaboration}</em>`;
           choicesLog.appendChild(li);
         });
 
@@ -1061,8 +1285,9 @@
         document.getElementById('report-growth').textContent = growthText;
 
         // Update summary pill
-        document.getElementById('summary-pill').textContent =
-          `${scenes.length} scenes completed`;
+        document.getElementById(
+          'summary-pill'
+        ).textContent = `${scenes.length} scenes completed`;
       }
 
       function generateSummary() {
@@ -1096,7 +1321,10 @@
         for (let arch of archetypes) {
           try {
             // Create a function that evaluates the condition with current scores
-            const conditionFunc = new Function(...Object.keys(score), `return ${arch.condition};`);
+            const conditionFunc = new Function(
+              ...Object.keys(score),
+              `return ${arch.condition};`
+            );
             if (conditionFunc(...Object.values(score))) {
               return arch.label;
             }
@@ -1113,7 +1341,10 @@
 
         for (let suggestion of suggestions) {
           try {
-            const conditionFunc = new Function(...Object.keys(score), `return ${suggestion.condition};`);
+            const conditionFunc = new Function(
+              ...Object.keys(score),
+              `return ${suggestion.condition};`
+            );
             if (conditionFunc(...Object.values(score))) {
               return suggestion.text;
             }
@@ -1126,12 +1357,105 @@
       }
 
       function restartGame() {
+        elaborationData = [];
+        pendingOption = null;
         showScreen('screen-intro');
       }
 
       function scrollToTop() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
+
+      // ==================== ELABORATION MODAL ====================
+
+      function showElaborationModal(option) {
+        const modal = document.getElementById('elaboration-modal');
+        const choiceDisplay = document.getElementById('modal-choice-text');
+        const textarea = document.getElementById('elaboration-input');
+        const wordCountDisplay = document.getElementById('word-count-display');
+
+        choiceDisplay.textContent = option.main;
+        textarea.value = '';
+        textarea.focus();
+
+        updateWordCount();
+        modal.classList.add('active');
+      }
+
+      function closeElaborationModal() {
+        const modal = document.getElementById('elaboration-modal');
+        modal.classList.remove('active');
+        pendingOption = null;
+      }
+
+      function countWords(text) {
+        if (!text.trim()) return 0;
+        return text.trim().split(/\s+/).length;
+      }
+
+      function updateWordCount() {
+        const textarea = document.getElementById('elaboration-input');
+        const wordCountText = document.getElementById('word-count-text');
+        const wordCountStatus = document.getElementById('word-count-status');
+        const wordCountDisplay = document.getElementById('word-count-display');
+        const validationMessage = document.getElementById('validation-message');
+        const saveBtn = document.getElementById('save-elaboration-btn');
+
+        const wordCount = countWords(textarea.value);
+        const isValid = wordCount >= 10;
+
+        wordCountText.textContent = `${wordCount} words`;
+
+        if (isValid) {
+          wordCountStatus.textContent = '✓';
+          wordCountDisplay.classList.remove('invalid');
+          wordCountDisplay.classList.add('valid');
+          validationMessage.classList.remove('show');
+          saveBtn.disabled = false;
+        } else {
+          wordCountStatus.textContent = `(need ${10 - wordCount} more)`;
+          wordCountDisplay.classList.remove('valid');
+          wordCountDisplay.classList.add('invalid');
+          validationMessage.classList.add('show');
+          saveBtn.disabled = true;
+        }
+      }
+
+      function saveElaboration() {
+        const textarea = document.getElementById('elaboration-input');
+        const elaboration = textarea.value.trim();
+        const wordCount = countWords(elaboration);
+
+        if (wordCount < 10) {
+          return;
+        }
+
+        applyScore(pendingOption, elaboration);
+
+        const modal = document.getElementById('elaboration-modal');
+        modal.classList.remove('active');
+
+        if (pendingOption.end) {
+          showReport();
+        } else {
+          currentSceneIndex++;
+          renderScene();
+        }
+
+        pendingOption = null;
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const textarea = document.getElementById('elaboration-input');
+        textarea.addEventListener('input', updateWordCount);
+
+        const modal = document.getElementById('elaboration-modal');
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            closeElaborationModal();
+          }
+        });
+      });
 
       // ==================== INITIALIZATION ====================
 
