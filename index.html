@@ -751,6 +751,150 @@
         box-shadow: 0 10px 26px rgba(15, 23, 42, 0.7);
       }
 
+      /* Download Report Modal */
+      .download-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
+      }
+
+      .download-modal-overlay.active {
+        display: flex;
+      }
+
+      .download-modal-content {
+        background: linear-gradient(
+          145deg,
+          rgba(15, 23, 42, 0.98),
+          rgba(15, 23, 42, 0.95)
+        );
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+        position: relative;
+      }
+
+      .download-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+      }
+
+      .download-modal-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text);
+        flex: 1;
+      }
+
+      .download-modal-close {
+        font-size: 0.9rem;
+        color: var(--muted);
+        cursor: pointer;
+        transition: color var(--transition-fast);
+        user-select: none;
+      }
+
+      .download-modal-close:hover {
+        color: var(--accent);
+      }
+
+      .download-form-group {
+        margin-bottom: 14px;
+      }
+
+      .download-form-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text);
+        margin-bottom: 6px;
+        display: block;
+      }
+
+      .download-form-label-required {
+        color: var(--danger);
+        margin-left: 2px;
+      }
+
+      .download-form-input,
+      .download-form-textarea {
+        width: 100%;
+        padding: 10px 12px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        border-radius: var(--radius-md);
+        color: var(--text);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          sans-serif;
+        font-size: 0.9rem;
+        transition: border-color var(--transition-fast);
+      }
+
+      .download-form-input:focus,
+      .download-form-textarea:focus {
+        outline: none;
+        border-color: rgba(56, 189, 248, 0.7);
+      }
+
+      .download-form-input::placeholder,
+      .download-form-textarea::placeholder {
+        color: rgba(148, 163, 184, 0.6);
+      }
+
+      .download-form-textarea {
+        resize: none;
+        height: 90px;
+      }
+
+      .download-form-error {
+        font-size: 0.75rem;
+        color: var(--danger);
+        margin-top: 4px;
+        display: none;
+      }
+
+      .download-form-error.show {
+        display: block;
+      }
+
+      .download-modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .download-btn-primary {
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(135deg, #0ea5e9, #22c55e);
+        color: #0b1120;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 0.9rem;
+        box-shadow: 0 10px 30px rgba(56, 189, 248, 0.6);
+        transition: all var(--transition-fast);
+      }
+
+      .download-btn-primary:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 36px rgba(56, 189, 248, 0.7);
+      }
+
+      .download-btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
       /* Scrollbar small tweak */
       ::-webkit-scrollbar {
         width: 6px;
@@ -966,6 +1110,83 @@
               disabled
             >
               Save & Continue
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOWNLOAD REPORT MODAL -->
+      <div class="download-modal-overlay" id="download-report-modal">
+        <div class="download-modal-content">
+          <div class="download-modal-header">
+            <div class="download-modal-title">
+              To get Mindset Report, submit this RPG result
+            </div>
+            <div
+              class="download-modal-close"
+              onclick="closeDownloadReportModal()"
+            >
+              Close
+            </div>
+          </div>
+
+          <div class="download-form-group">
+            <label class="download-form-label">
+              Source Code
+              <span class="download-form-label-required">*</span>
+            </label>
+            <input
+              type="text"
+              class="download-form-input"
+              id="download-source-code"
+              placeholder="Enter source code"
+              oninput="validateDownloadForm()"
+            />
+            <div class="download-form-error" id="download-source-code-error">
+              Source code is required
+            </div>
+          </div>
+
+          <div class="download-form-group">
+            <label class="download-form-label">
+              Questions you may have after this round
+              <span class="download-form-label-required">*</span>
+            </label>
+            <textarea
+              class="download-form-textarea"
+              id="download-questions"
+              placeholder="Type here..."
+              oninput="validateDownloadForm()"
+            ></textarea>
+            <div class="download-form-error" id="download-questions-error">
+              This field is required
+            </div>
+          </div>
+
+          <div class="download-form-group">
+            <label class="download-form-label">
+              What are your challenges at work?
+              <span class="download-form-label-required">*</span>
+            </label>
+            <textarea
+              class="download-form-textarea"
+              id="download-challenges"
+              placeholder="Type here..."
+              oninput="validateDownloadForm()"
+            ></textarea>
+            <div class="download-form-error" id="download-challenges-error">
+              This field is required
+            </div>
+          </div>
+
+          <div class="download-modal-buttons">
+            <button
+              class="download-btn-primary"
+              id="download-btn"
+              onclick="downloadReportAsJSON()"
+              disabled
+            >
+              Download result for Mindset Report
             </button>
           </div>
         </div>
@@ -1288,6 +1509,9 @@
         document.getElementById(
           'summary-pill'
         ).textContent = `${scenes.length} scenes completed`;
+
+        // Show download report modal
+        showDownloadReportModal();
       }
 
       function generateSummary() {
@@ -1455,7 +1679,157 @@
             closeElaborationModal();
           }
         });
+
+        const downloadModal = document.getElementById('download-report-modal');
+        downloadModal.addEventListener('click', (e) => {
+          if (e.target === downloadModal) {
+            closeDownloadReportModal();
+          }
+        });
       });
+
+      // ==================== DOWNLOAD REPORT MODAL ====================
+
+      let downloadFormData = {
+        sourceCode: '',
+        questions: '',
+        challenges: '',
+      };
+
+      function showDownloadReportModal() {
+        const modal = document.getElementById('download-report-modal');
+        resetDownloadForm();
+        modal.classList.add('active');
+      }
+
+      function closeDownloadReportModal() {
+        const modal = document.getElementById('download-report-modal');
+        modal.classList.remove('active');
+        resetDownloadForm();
+      }
+
+      function resetDownloadForm() {
+        document.getElementById('download-source-code').value = '';
+        document.getElementById('download-questions').value = '';
+        document.getElementById('download-challenges').value = '';
+
+        downloadFormData = {
+          sourceCode: '',
+          questions: '',
+          challenges: '',
+        };
+
+        document.getElementById('download-source-code-error').classList.remove('show');
+        document.getElementById('download-questions-error').classList.remove('show');
+        document.getElementById('download-challenges-error').classList.remove('show');
+
+        document.getElementById('download-btn').disabled = true;
+      }
+
+      function validateDownloadForm() {
+        const sourceCode = document.getElementById('download-source-code').value.trim();
+        const questions = document.getElementById('download-questions').value.trim();
+        const challenges = document.getElementById('download-challenges').value.trim();
+
+        downloadFormData.sourceCode = sourceCode;
+        downloadFormData.questions = questions;
+        downloadFormData.challenges = challenges;
+
+        const isSourceCodeValid = sourceCode.length > 0;
+        const isQuestionsValid = questions.length > 0;
+        const isChallengesValid = challenges.length > 0;
+
+        document.getElementById('download-source-code-error').classList.toggle('show', !isSourceCodeValid);
+        document.getElementById('download-questions-error').classList.toggle('show', !isQuestionsValid);
+        document.getElementById('download-challenges-error').classList.toggle('show', !isChallengesValid);
+
+        const isFormValid = isSourceCodeValid && isQuestionsValid && isChallengesValid;
+        document.getElementById('download-btn').disabled = !isFormValid;
+      }
+
+      function formatDate(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+
+      function formatTime(date) {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+      }
+
+      function sanitizeFilename(str) {
+        return str.replace(/[/\\:*?"<>|]/g, '').trim();
+      }
+
+      function generateJSONFilename() {
+        const date = new Date();
+        const dateFormatted = formatDate(date);
+        const timeFormatted = formatTime(date);
+        const sourceCode = sanitizeFilename(downloadFormData.sourceCode);
+        const rpgUid = currentStory.metadata.uid;
+
+        return `${sourceCode} - ${dateFormatted} - ${timeFormatted} - ${rpgUid}.json`;
+      }
+
+      function compileReportDataForJSON() {
+        const reportData = {
+          sourceCode: downloadFormData.sourceCode,
+          questionsAfterRound: downloadFormData.questions,
+          workChallenges: downloadFormData.challenges,
+          rpgUid: currentStory.metadata.uid,
+          rpgTitle: currentStory.metadata.title,
+          summary: document.getElementById('report-summary').textContent,
+          archetype: document.getElementById('archetype-label').textContent,
+          dimensionScores: {},
+          choicesLog: [],
+          growthRecommendation: document.getElementById('report-growth').textContent,
+          generatedAt: {
+            date: formatDate(new Date()),
+            time: formatTime(new Date()),
+          },
+        };
+
+        currentStory.dimensions.forEach((dim) => {
+          reportData.dimensionScores[dim.label] = score[dim.key];
+        });
+
+        choiceHistory.forEach((choiceCode, index) => {
+          const scene = scenes[index];
+          const option = scene.options.find((o) => o.code === choiceCode);
+          const elaboration = elaborationData[index] || '';
+
+          reportData.choicesLog.push({
+            scene: index + 1,
+            choiceMain: option.main,
+            choiceDescription: option.desc,
+            elaboration: elaboration,
+          });
+        });
+
+        return reportData;
+      }
+
+      function downloadReportAsJSON() {
+        const reportData = compileReportDataForJSON();
+        const jsonString = JSON.stringify(reportData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = generateJSONFilename();
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(url);
+
+        closeDownloadReportModal();
+      }
 
       // ==================== INITIALIZATION ====================
 
